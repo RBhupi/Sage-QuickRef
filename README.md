@@ -1,46 +1,52 @@
 # Quick Reference to Building a Sage-Waggle Plugin
-A concise guide titled that provides quick instructions to create a plugin for the Sage node on the Waggle platform. It covers various aspects of plugin development such as creating an application, testing the plugin, scheduling scripts, and downloading data.
+
 ###### tags: `sage` `waggle`
 
 [toc]
 
 ## To Do
-- [ ] Collect key links in the top most section with a short description.
+- [x] provide key links in the relevant section.
 - [ ] Provide notes on  `how to get ip/serialUSB port for their devices`.
 - [ ] Scheduling section needs cleaning up.
-- [x] Remove longer hightlighted text and use emoji.
-- [ ] We can provide links for the longer scripts that requires download.
+- [x] Remove longer highlighted text and use emoji.
+- [ ] We can provide links for the longer scripts that require download.
 
 
 
 ## Disclaimer 
-:warning: This is not a complete guide to plugin making. It's a collection of my personal notes and slack conversations with Cyberinfrastruture Team. This is my quick reference to copy-paste commands while working on plugins and to troubleshoot in testing/scheduling stage. Please consult the official Waggle-Sage :green_book:[Plugin Tutorials](https://docs.waggle-edge.ai/docs) for detailed guidance.
+:warning: This is not a complete guide to making a plugin. It's a collection of my notes and slack conversations with the Cyberinfrastructure Team. This is my quick reference to copy-paste commands while working on plugins and to troubleshooting in the testing/scheduling stage. Please consult the official Waggle-Sage :green_book:[Plugin Tutorials](https://docs.waggle-edge.ai/docs/about/overview) for detailed guidance.
 
 
 ## TIPS:
-Plugin=App
-:point_up: Do not make a plugin from scratch unless you have to. Copy the most relavant pluging and use that as a template.
+:information_source:  Plugin=App
+
+:::warning
+:point_up: Avoid making a plugin from scratch. Use another plugin or this [template](https://github.com/waggle-sensor/edge-app-template) for your first plugin or use :new: [Cookiecutter Template](https://github.com/waggle-sensor/cookiecutter-sage-app)
+:::
+
+:green_book: = recommended code docs and tutorials from Sage. 
+
 
 
 ## Components of a Plugin
-A Sage plugin consists of several components  which are described below:
+Typical components of a Sage plugin are described below:
 ### 1. An Application
-This is just your usual python program at this point. This can be a single .py script or a set of directories with many components (e.g. ML models, unit tests, test data etc) as per the application.
+This is just your usual python program, either a single .py script or a set of directories with many components (e.g. ML models, unit tests, test data, etc).
 
-:point_right: First do this step on your machine and perfect it untill your are happy with the core functionality.
+:point_right: First do this step on your machine and perfect it until you are happy with the core functionality.
 
 `app/app.py*`
-: the main Python file (sometimes also named as `main.py`) contains the code that defines the functionality of the plugin or calls other scripts to do tasks. It usually has `from waggle.plugin import Plugin` call to get the data from in-built sensors and publishes the output.
+: the main Python file (sometimes also named `main.py`) contains the code that defines the functionality of the plugin or calls other scripts to do tasks. It usually has `from waggle.plugin import Plugin` call to get the data from in-built sensors and publishes the output.
 
 > Install [pywaggle](https://github.com/waggle-sensor/pywaggle) `pip3 install -U 'pywaggle[all]'` 
 
 
 `app/test.py`
-: optinal but reccomended file, contains the unit tests for the plugin. 
+: optional but recommended file, contains the unit tests for the plugin. 
 
 ### 2. Dockerizing the App
 
-:point_right: Put everything in a Docker container using waggle base image and make it work. This may require some work if libraries are not compatible. Always use latest base images from link????? 
+:point_right: Put everything in a Docker container using a waggle base image and make it work. This may require some work if libraries are not compatible. Always use the latest base images from [Dockerhub](https://hub.docker.com/r/waggle/plugin-base/tags)
 
 `Dockerfile*`
 : contains instructions for building a Docker image for the plugin. It specifies the waggle base image from [dockerhub], sets up the environment, installs dependencies, and sets the ==entrypoint== for the container.
@@ -49,20 +55,21 @@ This is just your usual python program at this point. This can be a single .py s
 : lists the Python dependencies for the plugin. It is used by the Dockerfile to install the required packages using `pip`.
 
 `build.sh`
-: is a optional shell script to automate building the complecated Docker image with tags etc.
+: is an optional shell script to automate building the complicated Docker image with tags etc.
 
 `Makefile`
-: optional but reccomended file includes commands for building the Docker image, running tests, and deploying the plugin.
+: optional but the reccomended file includes commands for building the Docker image, running tests, and deploying the plugin.
 
 ### 3. ECR Configs and Docs
-You can do this step (==except sage.yaml==) after testing on node but before the ERC submission. :smile: 
+You can do this step (==except sage.yaml==) after testing on the node but before the [ERC submission](#Edge-code-repository). :smile: 
 
 `sage.yaml*`
-: is the configuration file usefull for ECR and job submission. Most importatntly it specifies the version and input arguments. 
+: is the configuration file useful for ECR and job submission? Most importantly it specifies the version and input arguments. 
 
 `README.md` and `ecr-meta/ecr-science-description.md*`
-: a Markdown files describing the scientific rational of the plugin as an extended abstract. This includes a description of the plugin, installation instructions, usage examples, data downloading code snippets and other relevant information.
-:bulb: Keep same text in both the files and follow the template of `ecr-science-description.md`. 
+: a Markdown file describing the scientific rationale of the plugin as an extended abstract. This includes a description of the plugin, installation instructions, usage examples, data downloading code snippets, and other relevant information.
+
+:bulb: Keep the same text in both files and follow the template of `ecr-science-description.md`. 
 
 `ecr-meta/ecr-icon.jpg`
 : is an icon for the plugin in the Sage portal.
@@ -71,41 +78,15 @@ You can do this step (==except sage.yaml==) after testing on node but before the
 `ecr-meta/ecr-science-image.jpg`
 : is a key image or figure plot that best represents the scientific output of the plugin. 
 
-
+:::info
 :green_book: Check Sage Tuorial [Part1](https://docs.waggle-edge.ai/docs/tutorials/edge-apps/intro-to-edge-apps) and [Part2](https://docs.waggle-edge.ai/docs/tutorials/edge-apps/creating-an-edge-app)
+:::
 
 ## Getting access to the node
-:green_book: See [Sage Tuorial: Part 3](https://docs.waggle-edge.ai/docs/tutorials/edge-apps/testing-an-edge-app) for details on this topic. 
 
-
-1. Create ssh public key using 
-`cd ~/.ssh` and `ssh-keygen -b 2048 -t rsa` and entering a passphrase for the private key. You will copy-paste the content of the <id_rsa.pub> in below steps.
-
-
-3. Follow this page: https://auth.sagecontinuum.org/update-my-keys to access the nodes, except for the Waggle private key.
-4. The ssh config required can be found on the same page, except for the Waggle private key which can be obtained by contacting the team :hourglass_flowing_sand:.
-5. Sample config file is shown below
-
-
-```bash
-PreferredAuthentications publickey,keyboard-interactive,password
-
-Host waggle-dev-sshd
-    HostName 192.5.86.5
-    Port 49190
-    User waggle
-    IdentityFile ~/.ssh/id_rsa # <<< your personal key
-    IdentitiesOnly yes
-
-Host waggle-dev-node-*
-    ProxyCommand ssh waggle-dev-sshd connect-to-node $(echo %h | sed "s/waggle-dev-node-//" )
-    User waggle
-    IdentityFile ~/.ssh/ecdsa_waggle_dev # <<< waggle dev key. please contact us for this.
-    IdentitiesOnly yes
-    StrictHostKeyChecking no
-```
-
-5. To test your connection, execute `ssh waggle-dev-sshd` and enter _your ssh key passphrase_. You should get the following output,
+1. Follow this page: https://portal.sagecontinuum.org/account/access to access the nodes.
+> _Note:_ The ssh key creation and ssh config file are provided on this page too.
+2. To test your connection, execute `ssh waggle-dev-sshd` and enter _your ssh key passphrase_. You should get the following output,
 
 
 > Enter passphrase for key '/Users/bhupendra/.ssh/id_rsa':
@@ -115,26 +96,39 @@ Host waggle-dev-node-*
 > Enter the passphrase to continue.
 
 
-6. To connect to the node, execute `ssh waggle-dev-node-V032` and enter the _passphrase provided by the waggle-dev_.
+3. To connect to the node, execute `ssh waggle-dev-node-V032` and enter the _passphrase provided by the waggle-dev_.
 
 You should see the following message,
 
 > Welcome to our node SSH gateway, Bhupendra Raut!
 > We are connecting you to node V030 
 
+:::info
+:green_book: See [Sage Tuorial: Part 3](https://docs.waggle-edge.ai/docs/tutorials/edge-apps/testing-an-edge-app) for details on this topic. 
+:::
+
+
 ## Testing plugins on the nodes
-:green_book: For more details on this topic check [pluginctl docs](https://github.com/waggle-sensor/edge-scheduler/tree/main/docs/pluginctl).
+
+:::danger
+:warning: Do not run any app or install packages directly on the node. Use Docker container or pluginctl commands.
+:::
 
 ### 1. Download and Run it
 
 #### Download
-- If you have not already done it, you need your plugin into a public github repository at this stage.
+- If you have not already done it, you need your plugin in a public GitHub repository at this stage.
 - To test the app on a node, go to nodes W0xx (e.g. W023) and clone your repo there using the command `git clone`.
+- At this stage, you can play with your plugin in the docker container until you are happy. Then if there are changes, do `git commit -am 'changes from node'` and `git push -u origin main`
 
-- At this stage, you can play with your plugin in the docker container untill you are happy. Then if there are changes, do `git commit -am 'changes from node'` and `git push -u origin main`
-:warning: Make sure your `Dockerfile` has a proper **entrypoint** all the time or the `pluginctl` run will fail.
+:warning: Make sure your `Dockerfile` has a proper **entrypoint** or the `pluginctl` run will fail.
 
 #### Testing with Pluginctl
+
+:::info
+:green_book: For more details on this topic check [pluginctl docs](https://github.com/waggle-sensor/edge-scheduler/tree/main/docs/pluginctl).
+:::
+
 1. Then to test execute the command `sudo pluginctl build .`. This will output the plugin-image registry address at the end of the build. Example: `10.31.81.1:5000/local/my-plugin-name`
 4. To run the plugin without input argument, use `sudo pluginctl run -n <some-unique-name> <1x.xx.xx.x:5000/local/my-plugin-name>`
 5.  Execute the command with input arguments. `sudo pluginctl run -n <some-unique-name> <1x.xx.xx.x:5000/local/my-plugin-name> -- -i top_camera`. 
@@ -144,7 +138,7 @@ You should see the following message,
 :warning:==Do not forget to stop the plugins== after testing or it will run forever. 
 
 ### 2. Check if it worked
-Login to the Sage portal and follow the instructions from section [See Your Data on Sage Portal](https://hackmd.io/iKUbbfZ7RYGbXT_tnBd1vg?both#See-Your-Data-on-Sage-Portal)
+Login to the Sage portal and follow the instructions from the section [See Your Data on Sage Portal](https://hackmd.io/iKUbbfZ7RYGbXT_tnBd1vg?both#See-Your-Data-on-Sage-Portal)
 
 ### 3. Troubleshooting Failed Plugin
 When you encounter a failing/long pending job with an error, you can use the following steps to help you diagnose the issue:
@@ -166,33 +160,42 @@ To publish your Plugin on ECR, follow these steps:
 3. Click on "My Apps". You must be logged in to continue.
 4. Click "Create App" and enter your Github Repo URL.
 5. 'Click "Register and Build App".
-6. After the build process is complete, you need to ==make the app public==.
-7. On Your app page click on the "Tags" tab to get the registry link when you need run the job on the node either using pluginctl or job script. This will look like:
-`docker pull registry.sagecontinuum.org/bhupendraraut/mobotix-move:1.23.3.2`
+6.   On Your app page click on the "Tags" tab to get the registry link when you need to run the job on the node either using pluginctl or job script. This will look like:`docker pull registry.sagecontinuum.org/bhupendraraut/mobotix-move:1.23.3.2`
+7. Repeat the above process for updating the plugin.
 
-:point_right: If you have skipped the step [3. ECR Configs and Docs](https://hackmd.io/iKUbbfZ7RYGbXT_tnBd1vg?both#3-ECR-Configs-and-Docs), do it before submitting to the ECR. Ensure that your `ecr-meta/ecr-science-description.md` and `sage.yaml` files are properly configured for this process.
+:::warning
+After the build process is complete, you need to **make the plugin public** to schedule it.
+:::
+
+
+:point_right: If you have skipped step [3. ECR Configs and Docs](#3-ECR-Configs-and-Docs), do it before submitting it to the ECR. Ensure that your `ecr-meta/ecr-science-description.md` and `sage.yaml` files are properly configured for this process.
 
 #### Versioning your code
-:exclamation: You can not resubmit the plugin to ECR with the same version number again.
+:::danger
+You can not resubmit the plugin to ECR with the same version number again.
+:::
 - So think about how you change it every time you resubmit to ERC and make your style of versioning.
-- I use `v0.y.m.d` e.g. `v0.23.3.4` but then I can only have 1 version a day, so now I am thinking of adding increamemtal integer to it (I am not sure if that's a great idea :thinking_face:) 
+- I use `v0.y.m.d` e.g. `v0.23.3.4` but then I can only have 1 version a day, so now I am thinking of adding an increamemtal integer to it (I am not sure if that's a great idea :thinking_face:) 
 
 ### After ECR registry test (generally not required)
-1. Generally successfully tested plugins just works. However, in case they are failing in the scheduled jobs after running for a while or after sucessfully running in the above tests, do the following.
+1. Generally successfully tested plugins just work. However, in case they are failing in the scheduled jobs after running for a while or after successfully running in the above tests, do the following.
 2. To test a plugin on a node after it has been built on the ECR, follow these steps: 
 ```bash
 sudo pluginctl run --name test-motion registry.sagecontinuum.org/bhupendraraut/cloud-motion:1.23.01.24 -- -input top
 ```
-2. This command will execute the plugin with the specified ECR image (version 1.23.01.24), passing the "-input top" argument to the plugin (Note `--` after the image telling pluginctl that these argiments are for plugin).
+2. This command will execute the plugin with the specified ECR image (version 1.23.01.24), passing the "-input top" argument to the plugin (Note `--` after the image telling pluginctl that these arguments are for the plugin).
 
 :point_right: Note the use of `sudo` in all commands on the node.
 
 Assuming that the plugin has been installed correctly and the ECR image is available, running this command should test the "test-motion" plugin on the node. 
 
-You may also have to call the `kubectl` <<POD>> commands as in testing section if this fails.
+You may also have to call the `kubectl` <<POD>> commands as in the testing section if this fails.
 
 ## Scheduling (Incomplete)
-:exclamation:If you get an error like `registry not found` or something similar. Ask to update registry on our slack channel.
+:::warning
+:exclamation: If you get an error like `registry does not exist in ECR` or something similar, then first check that your plugin is made public. If you are getting the error even after making it public, ask to update the registry on our slack channel.
+:::
+
     
 - Follow this [link](https://docs.waggle-edge.ai/docs/tutorials/schedule-jobs) to get an understanding of how to submit a job
 - Here are the parameters we set for the mobotix sampler plugin,
@@ -206,17 +209,12 @@ You may also have to call the `kubectl` <<POD>> commands as in testing section i
    --timeout 5 \
    --loopsleep 60
 ```
-- Your science rule can be a cronjob (More information can be found here [https://github.com/waggle-sensor/sciencerule-checker/blob/master/docs/supported_functions.md#cronjobprogram_name-cronjob_time]()
+- Your science rule can be a cronjob (More information can be found [here](https://github.com/waggle-sensor/sciencerule-checker/blob/master/docs/supported_functions.md#cronjobprogram_name-cronjob_time)
 - This runs every 15 minutes
-`"thermalimaging": cronjob("thermalimaging", "*/15 * * * *")`. Use [Crontab Guru](https://crontab.guru/).
-- You can also make it triggered by a value (Please read https://github.com/waggle-sensor/sciencerule-checker/blob/master/docs/supported_functions.md for supported functions).
+`"thermalimaging": cronjob("thermalimaging", "*/15 * * * *")`. 
+- Use [Crontab Guru](https://crontab.guru/).
+- You can also make it triggered by a value. Please [read this](https://github.com/waggle-sensor/sciencerule-checker/blob/master/docs/supported_functions.md) for supported functions.
 
-    
-NOTE: ==Getting camera ip==
-`nmap -sP <10.31.81.1/24>`
-cameras are normally in 10.31.81.1X range. Does not work if you have user account.
-
-NOTE: ==Getting serial device ip==.    
     
 ### Scheduling Script
 :sparkles: Check user friendly [job submission UI](https://portal.sagecontinuum.org/jobs/all-jobs) which is mostly  stable now (March 2023)
@@ -224,7 +222,7 @@ NOTE: ==Getting serial device ip==.
 :green_book: Check [sesctl docs](https://github.com/waggle-sensor/edge-scheduler/tree/main/docs/sesctl) for command line tool.
 
 1. :point_up: Do not use capital letters/dots in the job name. (someone please explain the rules to me)
-2. :point_up: make the plugin `public` in sage app portal.
+2. :point_up: make the plugin `public` in the Sage app portal.
 3. Also if you wanna run your plugins not all at the same time. use this example.
 
 ```less=
@@ -319,28 +317,10 @@ plugins:
     - 'top'
 nodeTags: []
 nodes:
-  W023: null
-  W02B: null
-  W02C: null
-  W06D: null
-  W06F: null
-  W07A: null
-  W07B: null
-  W07D: null
-  W07E: null
-  W07F: null
-  W015: null
-  W019: null
   W021: null
   W024: null
   W029: null
-  W039: null
-  W078: null
-  W079: null
-  W080: null
-  W083: null
-  W084: null
-  W088: null
+    
 scienceRules:
 - 'schedule("cloud-motion-v1"): cronjob("cloud-motion-v1", "* 12-23 * * *")'
 successCriteria:
@@ -364,6 +344,10 @@ for _, p in df[df["plugin_name"].str.contains(myplugin)].iterrows():
 
 https://github.com/waggle-sensor/edge-scheduler/blob/main/scripts/analysis/utils.py
 
+:sparkles: When the job failures are seen as `red` markers on your [job page](https://portal.sagecontinuum.org/jobs/my-jobs), you can click them to see the error.
+![click on red markers](https://i.imgur.com/xPXERPX.png)
+    
+![](https://i.imgur.com/GmStINF.png)
 
 
 ## Downloading the data
@@ -378,35 +362,38 @@ To check your data on Sage Portal, follow these steps:
 3. Then, select your app in the filter. 
 This will show all the data that is uploaded by your app using the `plugin.publish()` and `plugin.upload()` methods.
 
-In addition, you can data visualize it as a time series, select multiple variables to visualize together in a chart, which can be useful for identifying trends or patterns. 
+In addition, you can data visualize as a time series and select multiple variables to visualize together in a chart, which can be useful for identifying trends or patterns. 
 
 ![](https://i.imgur.com/5W9jAfw.png)
 
 
 ### Download all images with wget
 1. Visit https://training-data.sagecontinuum.org/
-2. select node is and period for data.
-3. Select required data and download text file _urls-xxxxxxx.txt_ with urls
-4. To select only the top camera images, use `vim` command :`g/^\(.*top\)\@!.*$/d`. This will delete urls that do not contain the word 'top'
-5. Copy the following command from the website and run in your terminal. `wget -r -N -i urls-xxxxxxx.txt` 
+2. select the node and period for data.
+3. Select the required data and download the text file _urls-xxxxxxx.txt_ with urls
+4. To select only the top camera images, use the `vim` command: `g/^\(.*top\)\@!.*$/d`. This will delete URLs that do not contain the word 'top'
+5. Copy the following command from the website and run it in your terminal. `wget -r -N -i urls-xxxxxxx.txt` 
 
 
 ### Sage data client for text data
-- Sage data client https://github.com/sagecontinuum/sage-data-client/blob/main/examples/plotting_example.ipynb
-- pypi link https://pypi.org/project/sage-data-client/
+- Sage data client [python Notebook Example](https://github.com/sagecontinuum/sage-data-client/blob/main/examples/plotting_example.ipynb)
+- pypi [link](https://pypi.org/project/sage-data-client/)
 `pip install sage-data-client`
     
-:green_book:Documnetation for [accesing the data.](https://docs.sagecontinuum.org/docs/tutorials/accessing-data)
+:::info
+:green_book: Documentation for [accessing the data.](https://docs.sagecontinuum.org/docs/tutorials/accessing-data)
+:::
+
 
 
 
 ### Querying Data Example
 
-The `sage_data_client` provides `query()` function ehich takes the parameters:
+The `sage_data_client` provides `query()` function which takes the parameters:
 
 `start`: The start time of the query as a string.
 `end`: The end time of the query as a string.
-`filter`: A dictionary with key-value pairs to apply filter. The function returns a pandas DataFrame object.
+`filter`: A dictionary with key-value pairs to apply filter. The function returns a Pandas DataFrame object. [Check more examples](https://github.com/RBhupi/sage-data-client/tree/main/examples).
 
 ```python=
 import sage_data_client
