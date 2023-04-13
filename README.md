@@ -1,5 +1,7 @@
 # Quick Reference to Building a Sage-Waggle Plugin
 
+[Click here](https://hackmd.io/@5TqRAV-BRRepWIcUHS0X8A/pluginQR) for the latest and better viewing version.]
+
 ###### tags: `sage` `waggle`
 
 [toc]
